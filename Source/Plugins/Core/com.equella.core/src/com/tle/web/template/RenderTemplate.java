@@ -120,6 +120,7 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 	@Override
 	public SectionResult renderHtml(RenderEventContext context) throws Exception
 	{
+		boolean oldLayout = context.getRequest().getParameter("old") != null;
 		setupHeaderHelper(context);
 		if( checkForResponse(context) )
 		{
@@ -173,12 +174,15 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 			// whether it is full-screen or not.
 			setHtmlAttrsToModel(context, model, decorations);
 
-			template = selectInnerLayout(context, collector.getTemplateResult());
+			template = collector.getTemplateResult();
+			if (oldLayout) {
+				template = selectInnerLayout(context, template);
+			}
 		}
 
 		model.getBody().setPostmarkup(template.getNamedResult(context, "postmarkup"));
-
-		return selectLayout(context, template);
+        if (oldLayout) return selectLayout(context, template);
+        else return RenderNewTemplate.renderHtml(viewFactory, context, template);
 	}
 
 	private void setupHeaderHelper(RenderEventContext context)

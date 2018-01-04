@@ -16,6 +16,16 @@ val axis2Version = "1.6.2"
 val TomcatVersion = "8.5.23"
 val SwaggerVersion = "1.5.16"
 
+val circeVersion = "0.9.0"
+
+libraryDependencies ++= Seq(
+  "io.circe" %% "circe-core",
+  "io.circe" %% "circe-generic",
+  "io.circe" %% "circe-parser"
+).map(_ % circeVersion)
+
+libraryDependencies += "org.jsoup" % "jsoup" % "1.11.2"
+
 libraryDependencies ++= Seq(
   "axis" % "axis" % "1.4",
   "cglib" % "cglib" % "2.2",
