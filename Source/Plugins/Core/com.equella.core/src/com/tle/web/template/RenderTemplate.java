@@ -23,6 +23,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import com.tle.web.navigation.MenuService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -95,7 +96,7 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 
 	private static final CssInclude BOOTSTRAP_CSS = Bootstrap.CSS;
 	private static final CssInclude STYLES_CSS = include(RESOURCES.url("css/styles.css")).prerender(BOOTSTRAP_CSS)
-		.hasRtl().priority(Priority.LOWEST).make();
+		.hasRtl().hasNew().priority(Priority.LOWEST).make();
 	private static final CssInclude CUSTOMER_CSS = include("css/customer.css").priority(Priority.HIGHEST).make();
 
 	private static final String KEY_IGNORE_STANDARD_TEMPLATE = "IGNORE_STANDARD_TEMPLATE";
@@ -111,6 +112,8 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 	private FreemarkerFactory viewFactory;
 
 	@Inject
+	private MenuService menuService;
+	@Inject
 	private HeaderSection header;
 	@Inject
 	private AccessibilityModeService acMode;
@@ -120,7 +123,7 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 	@Override
 	public SectionResult renderHtml(RenderEventContext context) throws Exception
 	{
-		boolean oldLayout = context.getRequest().getParameter("old") != null;
+		boolean oldLayout = !RenderNewTemplate.isNewLayout(context);
 		setupHeaderHelper(context);
 		if( checkForResponse(context) )
 		{
@@ -182,7 +185,7 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 
 		model.getBody().setPostmarkup(template.getNamedResult(context, "postmarkup"));
         if (oldLayout) return selectLayout(context, template);
-        else return RenderNewTemplate.renderHtml(viewFactory, context, template);
+        else return RenderNewTemplate.renderHtml(viewFactory, context, template, menuService);
 	}
 
 	private void setupHeaderHelper(RenderEventContext context)
